@@ -20,6 +20,7 @@ Cole o link de um vídeo que deu certo (Instagram, TikTok ou YouTube) e receba o
 | `ANTHROPIC_API_KEY` | Recomendada (roteiros melhores) | console.anthropic.com → API Keys |
 | `CODIGO_ACESSO` | Recomendada | Invente um código (ex.: `beta2026`). Vários separados por vírgula. Sem ele, qualquer pessoa com o link gasta seus créditos. |
 | `GEMINI_MODEL` | Não | Padrão: `gemini-3.8-flash` |
+| `GEMINI_MODEL_RESERVA` | Não | Usado quando o principal está sobrecarregado. Padrão: `gemini-3.6-flash` |
 | `CLAUDE_MODEL` | Não | Padrão: `claude-sonnet-5-5` |
 
 ## Trocar o nome do produto

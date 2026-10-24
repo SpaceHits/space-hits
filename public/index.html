@@ -383,6 +383,10 @@ async function enviar(pedido){
     const d=await r.json().catch(()=>({}));
     if(r.status===401&&d.codigo==="acesso"){$("#f-codigo").hidden=false;$("#in-codigo").value="";$("#in-codigo").focus();if(LS.get("codigo",""))aviso($("#msg-home"),"Esse código não funcionou. Confira com quem te convidou.",true);return;}
     if(!r.ok||!d.id){aviso($("#msg-home"),d.erro||"Não consegui começar agora. Tente de novo.",true);return;}
+    if(!d.disparado){
+      const b=await fetch("/.netlify/functions/processar-background",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({id:d.id})}).catch(()=>null);
+      if(!b||(b.status!==202&&!b.ok)){aviso($("#msg-home"),"Não consegui iniciar o processamento. Tente de novo.",true);return;}
+    }
     $("#prog-link").textContent=pedido.link||"Fala colada manualmente";
     marcar(pedido.texto?"escrevendo":"fila");ver("prog");
     acompanhar(d.id,pedido,perfil);

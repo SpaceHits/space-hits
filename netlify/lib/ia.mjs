@@ -1,6 +1,9 @@
 import { ErroAmigavel } from "./fontes.mjs";
 
 const GEMINI_MODEL = () => process.env.GEMINI_MODEL || "gemini-3.8-flash";
+// Modelo reserva, usado quando o principal está sobrecarregado (erro 503).
+const GEMINI_RESERVA = () => process.env.GEMINI_MODEL_RESERVA || "gemini-3.6-flash";
+const esperar = ms => new Promise(r => setTimeout(r, ms));
 const CLAUDE_MODEL = () => process.env.CLAUDE_MODEL || "claude-sonnet-5-5";
 
 // Extrai o primeiro objeto JSON de uma resposta (tolera cercas ```json).
@@ -12,10 +15,23 @@ export function lerJSON(texto) {
   throw new ErroAmigavel("A IA devolveu uma resposta incompleta. Tente de novo.");
 }
 
-async function gemini(partes, { json = true, temperatura = 0.7 } = {}) {
+// Chama o Gemini com novas tentativas: 503/500/429 são sobrecarga temporária do Google.
+async function gemini(partes, opcoes = {}) {
+  const modelos = [GEMINI_MODEL(), GEMINI_MODEL(), GEMINI_RESERVA(), GEMINI_RESERVA()];
+  const pausas = [0, 4000, 2000, 8000];
+  let ultimo;
+  for (let i = 0; i < modelos.length; i++) {
+    if (pausas[i]) await esperar(pausas[i]);
+    try { return await geminiUmaVez(modelos[i], partes, opcoes); }
+    catch (e) { ultimo = e; if (!e.temporario) throw e; }
+  }
+  throw new ErroAmigavel("O Gemini (Google) está sobrecarregado agora. Espere um ou dois minutos e tente de novo.");
+}
+
+async function geminiUmaVez(modelo, partes, { json = true, temperatura = 0.7 } = {}) {
   const chave = process.env.GEMINI_API_KEY;
   if (!chave) throw new ErroAmigavel("Falta configurar a variável GEMINI_API_KEY na Netlify.");
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL()}:generateContent`, {
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": chave },
     body: JSON.stringify({
@@ -26,9 +42,11 @@ async function gemini(partes, { json = true, temperatura = 0.7 } = {}) {
   const corpo = await r.json().catch(() => ({}));
   if (!r.ok) {
     const m = (corpo.error && corpo.error.message) || "";
-    if (r.status === 429) throw new ErroAmigavel("Limite de uso do Gemini atingido. Aguarde um minuto e tente de novo.");
-    if (r.status === 400 && /api key/i.test(m)) throw new ErroAmigavel("A chave do Gemini foi recusada. Confira GEMINI_API_KEY na Netlify.");
-    if (/private|unlisted|not.*public/i.test(m)) throw new ErroAmigavel("Esse vídeo do YouTube não é público. Só dá para ler vídeos públicos.");
+    console.error("Gemini", modelo, r.status, m.slice(0, 300));
+    if ([429, 500, 502, 503, 504].includes(r.status)) { const e = new Error("temporario"); e.temporario = true; throw e; }
+    if (r.status === 404) { const e = new Error("modelo"); e.temporario = true; throw e; } // modelo indisponível: tenta o reserva
+    if ((r.status === 400 || r.status === 403) && /api key|permission/i.test(m)) throw new ErroAmigavel("A chave do Gemini foi recusada. Confira GEMINI_API_KEY na Netlify.");
+    if (/private|unlisted|not.*public|unavailable video/i.test(m)) throw new ErroAmigavel("Esse vídeo do YouTube não é público. Só dá para ler vídeos públicos.");
     throw new ErroAmigavel("O Gemini não conseguiu processar o vídeo (" + r.status + ").");
   }
   const texto = (corpo.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("");

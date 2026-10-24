@@ -27,13 +27,14 @@ export default async (req) => {
   await salvarTarefa(id, { id, etapa: "fila", criado: Date.now(), link, texto: texto || null, perfil });
 
   // Dispara a função de segundo plano (responde 202 na hora).
-  const alvo = new URL("/.netlify/functions/processar-background", req.url);
-  const r = await fetch(alvo, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
-  if (!r.ok && r.status !== 202) {
-    await salvarTarefa(id, { etapa: "erro", erro: "Não consegui iniciar o processamento. Tente de novo." });
-    return json({ erro: "Não consegui iniciar o processamento. Tente de novo." }, 502);
-  }
-  return json({ id });
+  // Se a chamada interna falhar (ex.: site com proteção de acesso), a página dispara pelo navegador.
+  let disparado = false;
+  try {
+    const alvo = new URL("/.netlify/functions/processar-background", req.url);
+    const r = await fetch(alvo, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }), redirect: "manual" });
+    disparado = r.status === 202;
+  } catch {}
+  return json({ id, disparado });
 };
 
 function limparPerfil(p) {
