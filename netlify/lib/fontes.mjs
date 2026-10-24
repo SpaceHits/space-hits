@@ -69,5 +69,5 @@ export async function baixarVideo(url) {
   const buf = Buffer.from(await r.arrayBuffer());
   if (buf.length > 19 * 1024 * 1024) throw new ErroAmigavel("Esse vídeo é longo demais para esta versão (limite de cerca de 3 minutos).");
   const tipo = (r.headers.get("content-type") || "video/mp4").split(";")[0];
-  return { base64: buf.toString("base64"), tipo: tipo.startsWith("video/") ? tipo : "video/mp4" };
+  return { buffer: buf, base64: buf.toString("base64"), tipo: tipo.startsWith("video/") ? tipo : "video/mp4" };
 }

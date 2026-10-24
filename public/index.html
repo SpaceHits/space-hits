@@ -107,6 +107,15 @@ textarea{resize:vertical;min-height:140px}
 .xray dt{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .xray dd{margin:2px 0 0}
 .formula{font-family:var(--mono);font-size:13px;background:var(--sunk);border-radius:6px;padding:8px 10px;overflow-wrap:anywhere}
+.hook{display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.film{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;background:var(--ink);padding:8px;border-radius:8px}
+.film.um{grid-template-columns:minmax(0,1fr);max-width:320px}
+.film figure{margin:0;display:flex;flex-direction:column;gap:5px;min-width:0}
+.film img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:4px;background:#2A3050;display:block}
+.film.um img{aspect-ratio:16/9}
+.film figcaption{font-family:var(--mono);font-size:10.5px;color:#C9CDE0;letter-spacing:.06em;text-align:center}
+.hook p{margin:0}
+.hook .onscreen{font-family:var(--display);font-stretch:112%;font-weight:750}
 details.trans summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--cobalt)}
 details.trans div{margin-top:10px;white-space:pre-wrap;font-size:14px;color:var(--muted);max-height:260px;overflow:auto}
 
@@ -436,9 +445,25 @@ function normalizar(r){
 function concluir(t,pedido,perfil){
   const data=normalizar(t.resultado);
   if(!data.variacoes_reels.length){ver("home");aviso($("#msg-home"),"A resposta veio incompleta. Tente de novo.",true);return;}
-  const h={id:t.id,criado:Date.now(),link:pedido.link||"",perfil:perfil&&perfil.nome||"",fonte:t.fonte||{},transcricao:t.transcricao||pedido.texto||"",data};
+  const h={id:t.id,criado:Date.now(),link:pedido.link||"",perfil:perfil&&perfil.nome||"",fonte:t.fonte||{},transcricao:t.transcricao||pedido.texto||"",
+    analise:t.analise||null,quadros:Array.isArray(t.quadros)?t.quadros:[],capa:t.capa||null,data};
   S.historico=[h,...S.historico.filter(x=>x.id!==h.id)].slice(0,40);LS.set("historico",S.historico);
   S.atual=h;S.aba=0;S.modo="diretor";renderResultado();ver("result");$("#in-link").value="";toast("Roteiros prontos");
+}
+const fmtT = t => "0:0"+String(t.toFixed(1)).replace(".",",")+"s";
+function blocoGancho(h){
+  const a=h.analise||{}, q=h.quadros||[];
+  let film="";
+  if(q.length){
+    film=`<div class="film" aria-label="Prints dos 3 primeiros segundos">${q.map(f=>`<figure><img src="/api/quadro?id=${encodeURIComponent(h.id)}&n=${f.n}" alt="Quadro do vídeo em ${fmtT(f.t)}" loading="lazy" onerror="this.closest('figure').hidden=true"><figcaption>${fmtT(f.t)}</figcaption></figure>`).join("")}</div>`;
+  }else if(h.capa){
+    film=`<div class="film um"><figure><img src="${esc(h.capa)}" alt="Capa do vídeo" loading="lazy" onerror="this.closest('.film').hidden=true"><figcaption>CAPA DO VÍDEO</figcaption></figure></div>`;
+  }
+  if(!film&&!a.gancho_visual)return "";
+  return `<div class="hook"><dt>O gancho na tela · 0 a 3 segundos</dt>${film}
+    ${a.gancho_visual?`<p>${esc(a.gancho_visual)}</p>`:""}
+    ${a.textos_na_tela?`<p><span class="hint">Texto na tela: </span><span class="onscreen">${esc(a.textos_na_tela)}</span></p>`:""}
+    ${a.ritmo_edicao?`<p class="hint" style="font-size:13.5px">Edição: ${esc(a.ritmo_edicao)}</p>`:""}</div>`;
 }
 function tc(etapa,i){const m=String(etapa).match(/^(.*?)\s*\((.*?)\)\s*$/);return {nome:m?m[1]:etapa,tempo:m?m[2]:"",n:String(i+1).padStart(2,"0")};}
 function txtReel(v){let t=`*REEL ${v.id} · ${v.angulo}*\n_${v.titulo_interno}_${v.tempo_estimado?" · "+v.tempo_estimado:""}\n`;v.blocos_roteiro.forEach(b=>{t+=`\n*[${b.etapa}]*\n*CENA:* ${b.cena_visual}\n*TEXTO NA TELA:* ${b.texto_tela}\n*FALA:* ${b.fala}\n`;});if(v.sugestao_legenda)t+=`\n*LEGENDA:*\n${v.sugestao_legenda}`;return t;}
@@ -478,6 +503,7 @@ function renderResultado(){
       <div><dt>Tipo de gancho</dt><dd style="font-weight:700;font-size:17px">${esc(x.tipo_gancho)}</dd></div>
       <div><dt>Por que funcionou</dt><dd>${esc(x.por_que_funcionou)}</dd></div>
       <div><dt>Fórmula</dt><dd class="formula">${esc(x.formula_estrutural)}</dd></div>
+      ${blocoGancho(h)}
       ${h.transcricao?`<details class="trans"><summary>Ver a fala do vídeo original</summary><div>${esc(h.transcricao)}</div></details>`:""}
     </dl></div>
     <div class="rtabs" role="tablist">${abas.map((a,i)=>`<button type="button" role="tab" data-aba="${i}" aria-selected="${i===S.aba}">${a}</button>`).join("")}</div>

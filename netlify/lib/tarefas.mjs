@@ -2,6 +2,8 @@ import { getStore } from "@netlify/blobs";
 
 const loja = () => getStore({ name: "tarefas", consistency: "strong" });
 
+export const lerQuadro = (id, n) => getStore({ name: "quadros" }).get(`${id}/${n}`, { type: "arrayBuffer" });
+
 export const lerTarefa = id => loja().get(id, { type: "json" });
 
 export async function salvarTarefa(id, dados) {

@@ -4,3 +4,8 @@
 
 [functions]
   node_bundler = "esbuild"
+
+# O ffmpeg (para os prints do gancho) vai só na função de processamento.
+[functions."processar-background"]
+  external_node_modules = ["ffmpeg-static"]
+  included_files = ["node_modules/ffmpeg-static/ffmpeg"]
