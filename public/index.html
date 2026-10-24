@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Space Hits</title>
+<meta name="description" content="Space Hits, by Space Media: transforme o vídeo que bombou nos próximos roteiros.">
+<meta name="theme-color" content="#F2F4F8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10' fill='%23D93A28'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: tela inicial com um único campo (estilo buscador); resultado em coluna única de até 720px com fichas de cena. */
+:root{
+  --paper:#F2F4F8; --surface:#FFFFFF; --sunk:#E9ECF3;
+  --ink:#141829; --muted:#5A6178; --line:#D9DEE9;
+  --rec:#D93A28; --rec-soft:#FBE5E1; --on-rec:#FFFFFF;
+  --cobalt:#2846C9; --cobalt-soft:#E3E8FB; --ok:#1F7A4D;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#0E1120; --surface:#161A2D; --sunk:#1D2238;
+  --ink:#ECEEF6; --muted:#9AA1BC; --line:#2A3050;
+  --rec:#FF5B48; --rec-soft:#3B1D1C; --on-rec:#170807;
+  --cobalt:#8199FF; --cobalt-soft:#1F2853; --ok:#5DCB93; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+header.top{position:sticky;top:0;z-index:5;background:var(--paper);padding-top:env(safe-area-inset-top,0px)}
+header.top .wrap{display:flex;align-items:center;gap:8px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:9px;background:none;border:0;padding:0;cursor:pointer}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--rec);box-shadow:0 0 0 4px var(--rec-soft)}
+.brand b{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:17px;letter-spacing:-.01em}
+header .sp{flex:1}
+.navbtn{background:none;border:0;padding:8px 10px;border-radius:8px;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer}
+.navbtn:hover{color:var(--ink);background:var(--sunk)}
+
+main{padding-block:8px 72px}
+
+/* Tela inicial */
+.home{min-height:calc(100svh - 180px);display:flex;flex-direction:column;justify-content:center;gap:22px;padding-block:24px}
+.home h1{margin:0;font-family:var(--display);font-stretch:122%;font-weight:850;font-size:clamp(30px,8vw,52px);line-height:1.02;letter-spacing:-.02em;text-wrap:balance}
+.home h1 em{font-style:normal;color:var(--rec)}
+.home p.sub{margin:0;color:var(--muted);font-size:16px;max-width:52ch}
+.search{display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:6px 6px 6px 16px;box-shadow:0 1px 0 var(--line)}
+.search:focus-within{border-color:var(--ink)}
+.search input{flex:1;min-width:0;border:0;background:none;padding:12px 0;font-size:16px;outline:none}
+.search .paste{background:none;border:0;color:var(--cobalt);font-weight:600;font-size:13px;padding:8px;cursor:pointer}
+.go{display:inline-flex;align-items:center;gap:8px;background:var(--rec);color:var(--on-rec);border:0;border-radius:10px;padding:12px 16px;font-family:var(--display);font-stretch:112%;font-weight:800;font-size:15px;cursor:pointer;white-space:nowrap}
+.go .rec{width:9px;height:9px;border-radius:50%;background:var(--on-rec)}
+.go[disabled]{opacity:.55;cursor:not-allowed}
+.under{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:13px;color:var(--muted)}
+.plat{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+.linkish{background:none;border:0;padding:0;color:var(--cobalt);font-weight:600;cursor:pointer;font-size:13px;text-align:left}
+.ex{font-size:13px;color:var(--muted)}
+.assin{margin:8px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ex code{font-family:var(--mono);font-size:12px;background:var(--sunk);padding:2px 6px;border-radius:4px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.lbl{font-weight:600;font-size:13px}
+.hint{font-size:12.5px;color:var(--muted)}
+input[type=text],input[type=password],select,textarea{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:11px 12px;font-size:15px}
+textarea{resize:vertical;min-height:140px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row > select{flex:1;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);padding:10px 14px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.small{padding:7px 10px;font-size:13px}
+.btn.dark{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.danger{color:var(--rec)}
+.notice{font-size:14px;border-radius:8px;padding:10px 12px;background:var(--cobalt-soft)}
+.notice.err{background:var(--rec-soft)}
+
+/* Progresso */
+.prog{display:flex;flex-direction:column;gap:14px;padding-block:28px}
+.prog .link{font-family:var(--mono);font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.steps{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
+.steps li{display:flex;align-items:center;gap:12px;font-size:16px;color:var(--muted)}
+.steps li::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid var(--line);flex:none}
+.steps li.on{color:var(--ink);font-weight:700}
+.steps li.on::before{border-color:var(--rec);background:var(--rec);animation:blink 1s steps(2) infinite}
+.steps li.done{color:var(--ink)}
+.steps li.done::before{border-color:var(--ok);background:var(--ok)}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.steps li.on::before{animation:none}}
+
+/* Resultado */
+.result{display:flex;flex-direction:column;gap:16px;padding-block:12px}
+.result-head{display:flex;flex-direction:column;gap:6px}
+.result-head h2{margin:0;font-family:var(--display);font-stretch:118%;font-weight:850;font-size:clamp(22px,5vw,28px);line-height:1.1;text-wrap:balance}
+.badge{align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--sunk);color:var(--muted);overflow-wrap:anywhere}
+.stats{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats b{color:var(--ink);font-weight:600}
+.xray{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.xray .bar{padding:10px 14px;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+.xray dl{margin:0;padding:14px;display:grid;gap:12px}
+.xray dt{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.xray dd{margin:2px 0 0}
+.formula{font-family:var(--mono);font-size:13px;background:var(--sunk);border-radius:6px;padding:8px 10px;overflow-wrap:anywhere}
+details.trans summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--cobalt)}
+details.trans div{margin-top:10px;white-space:pre-wrap;font-size:14px;color:var(--muted);max-height:260px;overflow:auto}
+
+.rtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.rtabs::-webkit-scrollbar{display:none}
+.rtabs button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600;font-size:13.5px;cursor:pointer;color:var(--muted)}
+.rtabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.reel{display:flex;flex-direction:column;gap:14px}
+.reel-meta{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12.5px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--rec-soft);color:var(--rec)}
+.chip.time{background:var(--sunk);color:var(--muted);font-family:var(--mono);font-weight:500}
+.reel h3{margin:0;font-family:var(--display);font-stretch:110%;font-weight:750;font-size:19px;line-height:1.2;text-wrap:balance}
+.mode{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;align-self:flex-start}
+.mode button{border:0;background:var(--surface);padding:7px 12px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.mode button[aria-pressed="true"]{background:var(--cobalt-soft);color:var(--cobalt)}
+.scenes{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.scene{border-top:1px solid var(--line)}
+.scene:first-child{border-top:0}
+.scene .tc{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--sunk);font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.scene .tc .n{color:var(--rec)}
+.scene .cols{display:grid;gap:10px;padding:12px 14px 14px}
+.scene .k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.scene .fala .v{font-size:16px;line-height:1.55}
+.scene .tela .v{font-family:var(--display);font-stretch:112%;font-weight:750}
+.scene .cena .v{color:var(--muted);font-size:14px}
+@media (min-width:620px){.scene .cols{grid-template-columns:1fr 1.4fr;column-gap:18px}.scene .fala{grid-column:2;grid-row:1 / span 2}}
+.tele-preview{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;font-size:18px;line-height:1.6;white-space:pre-wrap}
+.caption{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:12px 14px;white-space:pre-wrap;font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.actions .btn{flex:1 1 auto}
+.slides{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+.slide{flex:0 0 min(78%,300px);scroll-snap-align:start;aspect-ratio:4/5;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.slide .num{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em}
+.slide h4{margin:0;font-family:var(--display);font-stretch:115%;font-weight:800;font-size:20px;line-height:1.15;text-wrap:balance}
+.slide p{margin:0;font-size:14px}
+.slide .vis{margin-top:auto;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
+.slide.first{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.slide.first .num,.slide.first .vis{color:var(--paper);opacity:.7;border-color:currentColor}
+
+.list{display:flex;flex-direction:column;gap:10px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:6px}
+.item .t{font-weight:700;font-size:16px}
+.item .s{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.empty{padding:22px 16px;border:1px dashed var(--line);border-radius:var(--r);color:var(--muted)}
+h2.page{margin:16px 0 4px;font-family:var(--display);font-stretch:118%;font-weight:850;font-size:28px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:600;z-index:30;max-width:calc(100% - 32px)}
+
+.tp{position:fixed;inset:0;z-index:50;background:#05060B;color:#F4F4F0;display:flex;flex-direction:column}
+.tp-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:calc(10px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px));background:#11131C;border-bottom:1px solid #262A3A}
+.tp-bar button{background:#1F2333;color:#F4F4F0;border:1px solid #33384D;border-radius:8px;padding:8px 12px;font-weight:600;font-size:14px;cursor:pointer}
+.tp-bar button.play{background:#D93A28;border-color:#D93A28;color:#fff;min-width:96px}
+.tp-bar label{display:flex;align-items:center;gap:6px;font-size:12px;color:#A8ADC2;font-family:var(--mono)}
+.tp-bar input[type=range]{width:90px;accent-color:#D93A28}
+.tp-scroll{flex:1;overflow-y:auto;position:relative}
+.tp-guide{position:absolute;left:0;right:0;top:33%;border-top:2px dashed rgba(217,58,40,.55);pointer-events:none}
+.tp-text{padding:33vh max(22px,env(safe-area-inset-right,0px)) 70vh max(22px,env(safe-area-inset-left,0px));font-family:var(--display);font-weight:650;line-height:1.35;white-space:pre-wrap;max-width:900px;margin:0 auto}
+.tp-text.mirror{transform:scaleX(-1)}
+.tp .spacer{flex:1}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <button type="button" class="brand" id="btn-home" aria-label="Início"><span class="dot" aria-hidden="true"></span><b id="nome-app">Space Hits</b></button>
+    <span class="sp"></span>
+    <button type="button" class="navbtn" id="nav-perfis">Perfis</button>
+    <button type="button" class="navbtn" id="nav-historico">Histórico</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- INÍCIO -->
+  <section class="home" id="v-home">
+    <h1>Cole o vídeo que <em>bombou</em>. Receba os próximos roteiros.</h1>
+    <p class="sub">A ferramenta assiste ao vídeo, descobre por que ele funcionou e escreve 3 novos Reels e um carrossel no mesmo formato.</p>
+
+    <form id="f-link" novalidate>
+      <div class="search">
+        <input type="text" id="in-link" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cole o link do Reel, TikTok ou Short" aria-label="Link do vídeo">
+        <button type="button" class="paste" id="btn-colar">Colar</button>
+        <button type="submit" class="go" id="btn-go"><span class="rec" aria-hidden="true"></span>Multiplicar</button>
+      </div>
+    </form>
+
+    <div class="under">
+      <span class="plat">Instagram · TikTok · YouTube</span>
+      <label class="hint" for="sel-perfil" style="display:flex;align-items:center;gap:6px">Perfil:
+        <select id="sel-perfil" style="width:auto;padding:5px 8px;font-size:13px;background:var(--surface)"></select>
+      </label>
+      <button type="button" class="linkish" id="btn-texto">Sem link? Colar a fala</button>
+    </div>
+
+    <form class="panel" id="f-texto" hidden novalidate>
+      <div class="field">
+        <label for="in-texto">Fala do vídeo</label>
+        <textarea id="in-texto" placeholder="Cole aqui o que é falado no vídeo campeão."></textarea>
+      </div>
+      <div class="row"><button type="submit" class="btn dark">Multiplicar esta fala</button><button type="button" class="btn" id="btn-texto-fechar">Voltar ao link</button></div>
+    </form>
+
+    <form class="panel" id="f-codigo" hidden novalidate>
+      <div class="field">
+        <label for="in-codigo">Código de acesso do beta</label>
+        <input type="password" id="in-codigo" autocomplete="off">
+        <span class="hint">A ferramenta está em teste fechado. Use o código que você recebeu.</span>
+      </div>
+      <div class="row"><button type="submit" class="btn dark">Entrar</button></div>
+    </form>
+
+    <div id="msg-home" hidden></div>
+    <p class="assin">Space Hits, by Space Media</p>
+  </section>
+
+  <!-- PROCESSANDO -->
+  <section class="prog" id="v-prog" hidden>
+    <div class="lbl" style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Gravando…</div>
+    <div class="link" id="prog-link"></div>
+    <ul class="steps" id="steps">
+      <li data-e="buscando">Buscando o vídeo</li>
+      <li data-e="assistindo">Assistindo e transcrevendo</li>
+      <li data-e="escrevendo">Escrevendo 3 Reels e o carrossel</li>
+    </ul>
+    <span class="hint">Leva de 1 a 3 minutos. Pode deixar esta tela aberta.</span>
+    <button type="button" class="btn small" id="btn-cancelar" style="align-self:flex-start">Cancelar</button>
+  </section>
+
+  <!-- RESULTADO -->
+  <section id="v-result" hidden></section>
+
+  <!-- PERFIS -->
+  <section id="v-perfis" hidden>
+    <h2 class="page">Perfis</h2>
+    <p class="hint" style="font-size:14px;margin:0 0 16px">Opcional. Sem perfil, a ferramenta deduz nicho e tom de voz do próprio vídeo. Com perfil, os roteiros saem no jeito de falar de cada cliente.</p>
+    <form class="panel" id="f-perfil" hidden novalidate>
+      <div class="lbl" id="f-perfil-tit">Novo perfil</div>
+      <div class="field"><label for="p-nome">Nome ou marca</label><input type="text" id="p-nome" placeholder="Ex.: Clínica Movimento"></div>
+      <div class="field"><label for="p-nicho">Nicho / especialidade</label><input type="text" id="p-nicho" placeholder="Ex.: fisioterapia esportiva"></div>
+      <div class="field"><label for="p-publico">Público-alvo</label><input type="text" id="p-publico" placeholder="Ex.: corredores amadores com dores recorrentes"></div>
+      <div class="field"><label for="p-tom">Tom de voz</label><input type="text" id="p-tom" placeholder="Ex.: técnico porém acessível, direto"></div>
+      <div class="field"><label for="p-objetivo">Objetivo do perfil</label><input type="text" id="p-objetivo" placeholder="Ex.: agendamentos pelo WhatsApp"></div>
+      <div class="field"><label for="p-direcao">Direção fixa para os roteiros</label><input type="text" id="p-direcao" placeholder="Ex.: sempre mostrar os equipamentos da clínica"></div>
+      <div id="msg-perfil" hidden></div>
+      <div class="row"><button type="submit" class="btn dark">Salvar perfil</button><button type="button" class="btn" id="btn-perfil-cancelar">Cancelar</button></div>
+    </form>
+    <button type="button" class="btn" id="btn-perfil-novo" style="margin-bottom:12px">+ Novo perfil</button>
+    <div class="list" id="lista-perfis"></div>
+  </section>
+
+  <!-- HISTÓRICO -->
+  <section id="v-historico" hidden>
+    <h2 class="page">Histórico</h2>
+    <p class="hint" style="font-size:14px;margin:0 0 16px">Fica salvo neste aparelho.</p>
+    <div class="list" id="lista-historico"></div>
+  </section>
+</main>
+
+<div class="tp" id="tp" hidden>
+  <div class="tp-bar">
+    <button type="button" class="play" id="tp-play">▶ Rolar</button>
+    <label for="tp-vel">Velocidade <input type="range" id="tp-vel" min="10" max="120" value="40"></label>
+    <label for="tp-tam">Tamanho <input type="range" id="tp-tam" min="24" max="72" value="40"></label>
+    <button type="button" id="tp-mirror">Espelhar</button>
+    <span class="spacer"></span>
+    <button type="button" id="tp-close">Fechar</button>
+  </div>
+  <div class="tp-scroll" id="tp-scroll"><div class="tp-guide" aria-hidden="true"></div><div class="tp-text" id="tp-text"></div></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+const APP = "Space Hits"; // nome exibido no topo e na aba do navegador
+document.getElementById("nome-app").textContent = APP; document.title = APP;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const LS = {
+  get(k,d){try{const v=localStorage.getItem("rc_"+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem("rc_"+k,JSON.stringify(v));}catch(e){}}
+};
+let toastT;
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200);}
+function aviso(el,txt,err){el.hidden=!txt;el.className="notice"+(err?" err":"");el.textContent=txt||"";}
+function fmtData(ts){try{return new Date(ts).toLocaleString("pt-BR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});}catch(e){return "";}}
+const fmtN = n => n==null?null:Number(n).toLocaleString("pt-BR");
+async function copiar(t){
+  try{await navigator.clipboard.writeText(t);toast("Copiado");return;}catch(e){}
+  const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+  let ok=false;try{ok=document.execCommand("copy");}catch(e){} ta.remove();toast(ok?"Copiado":"Selecione e copie manualmente");
+}
+const wa = t => "https://wa.me/?text="+encodeURIComponent(t);
+
+/* ---------- Estado ---------- */
+const S = {perfis:LS.get("perfis",[]), historico:LS.get("historico",[]), atual:null, aba:0, modo:"diretor", editando:null, polling:null, cancelado:false, ultimoPedido:null};
+
+/* ---------- Telas ---------- */
+const VIEWS=["home","prog","result","perfis","historico"];
+function ver(v){VIEWS.forEach(n=>$("#v-"+n).hidden=(n!==v));window.scrollTo(0,0);}
+$("#btn-home").onclick=()=>{pararPolling();ver("home");$("#in-link").focus();};
+$("#nav-perfis").onclick=()=>{renderPerfis();ver("perfis");};
+$("#nav-historico").onclick=()=>{renderHistorico();ver("historico");};
+
+/* ---------- Perfis ---------- */
+const CAMPOS=["nome","nicho","publico","tom","objetivo","direcao"];
+function salvarPerfis(){LS.set("perfis",S.perfis);}
+function renderSelect(){
+  const sel=$("#sel-perfil"), atual=LS.get("perfil_sel","");
+  sel.innerHTML='<option value="">Automático</option>'+S.perfis.map(p=>`<option value="${esc(p.id)}">${esc(p.nome)}</option>`).join("")+'<option value="__novo">+ Novo perfil…</option>';
+  sel.value=S.perfis.some(p=>p.id===atual)?atual:"";
+}
+$("#sel-perfil").onchange=e=>{
+  if(e.target.value==="__novo"){e.target.value=LS.get("perfil_sel","");abrirPerfil(null);return;}
+  LS.set("perfil_sel",e.target.value);
+};
+function renderPerfis(){
+  const box=$("#lista-perfis");
+  if(!S.perfis.length){box.innerHTML='<div class="empty">Nenhum perfil salvo. Tudo bem: no modo automático a ferramenta deduz o tom de voz do vídeo.</div>';return;}
+  box.innerHTML=S.perfis.map(p=>`<div class="item">
+    <div class="t">${esc(p.nome)}</div>
+    <div class="s">${esc([p.nicho,p.publico].filter(Boolean).join(" · "))}</div>
+    ${p.tom?`<div class="s">Tom: ${esc(p.tom)}</div>`:""}
+    ${S.confirmar===p.id?`<div class="row notice err"><span>Excluir este perfil?</span><button type="button" class="btn small danger" data-a="ok" data-id="${esc(p.id)}">Excluir</button><button type="button" class="btn small" data-a="nao">Manter</button></div>`:
+    `<div class="row"><button type="button" class="btn small" data-a="usar" data-id="${esc(p.id)}">Usar</button><button type="button" class="btn small" data-a="edit" data-id="${esc(p.id)}">Editar</button><button type="button" class="btn small danger" data-a="del" data-id="${esc(p.id)}">Excluir</button></div>`}
+  </div>`).join("");
+}
+$("#lista-perfis").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-a]");if(!b)return;const id=b.dataset.id;
+  if(b.dataset.a==="usar"){LS.set("perfil_sel",id);renderSelect();ver("home");$("#in-link").focus();}
+  if(b.dataset.a==="edit")abrirPerfil(S.perfis.find(p=>p.id===id));
+  if(b.dataset.a==="del"){S.confirmar=id;renderPerfis();}
+  if(b.dataset.a==="nao"){S.confirmar=null;renderPerfis();}
+  if(b.dataset.a==="ok"){S.perfis=S.perfis.filter(p=>p.id!==id);salvarPerfis();S.confirmar=null;renderPerfis();renderSelect();toast("Perfil excluído");}
+});
+function abrirPerfil(p){
+  S.editando=p?p.id:null;$("#f-perfil-tit").textContent=p?"Editar perfil":"Novo perfil";
+  CAMPOS.forEach(k=>$("#p-"+k).value=p?(p[k]||""):"");aviso($("#msg-perfil"),"");
+  $("#f-perfil").hidden=false;$("#btn-perfil-novo").hidden=true;renderPerfis();ver("perfis");$("#p-nome").focus();
+}
+function fecharPerfil(){$("#f-perfil").hidden=true;$("#btn-perfil-novo").hidden=false;S.editando=null;}
+$("#btn-perfil-novo").onclick=()=>abrirPerfil(null);
+$("#btn-perfil-cancelar").onclick=fecharPerfil;
+$("#f-perfil").addEventListener("submit",e=>{
+  e.preventDefault();const d={};CAMPOS.forEach(k=>d[k]=$("#p-"+k).value.trim());
+  if(!d.nome){aviso($("#msg-perfil"),"Dê pelo menos um nome ao perfil.",true);return;}
+  const p={...d,id:S.editando||uid()};
+  S.perfis=[p,...S.perfis.filter(x=>x.id!==p.id)];salvarPerfis();LS.set("perfil_sel",p.id);
+  fecharPerfil();renderPerfis();renderSelect();toast("Perfil salvo");
+});
+
+/* ---------- Envio ---------- */
+$("#btn-colar").onclick=async()=>{
+  try{const t=await navigator.clipboard.readText();if(t){$("#in-link").value=t.trim();$("#in-link").focus();}}
+  catch(e){$("#in-link").focus();toast("Toque e segure no campo para colar");}
+};
+$("#btn-texto").onclick=()=>{$("#f-texto").hidden=false;$("#in-texto").focus();};
+$("#btn-texto-fechar").onclick=()=>{$("#f-texto").hidden=true;};
+$("#f-link").addEventListener("submit",e=>{e.preventDefault();const l=$("#in-link").value.trim();if(!l){aviso($("#msg-home"),"Cole o link do vídeo que deu certo.",true);return;}enviar({link:l});});
+$("#f-texto").addEventListener("submit",e=>{e.preventDefault();enviar({texto:$("#in-texto").value.trim()});});
+$("#f-codigo").addEventListener("submit",e=>{e.preventDefault();LS.set("codigo",$("#in-codigo").value.trim());$("#f-codigo").hidden=true;if(S.ultimoPedido)enviar(S.ultimoPedido);});
+
+function perfilAtual(){const id=LS.get("perfil_sel","");const p=S.perfis.find(x=>x.id===id);if(!p)return null;const o={};CAMPOS.forEach(k=>{if(p[k])o[k]=p[k];});return o;}
+
+async function enviar(pedido){
+  aviso($("#msg-home"),"");S.ultimoPedido=pedido;
+  const perfil=perfilAtual();
+  $("#btn-go").disabled=true;
+  try{
+    const r=await fetch("/api/iniciar",{method:"POST",headers:{"content-type":"application/json","x-codigo":LS.get("codigo","")},body:JSON.stringify({...pedido,perfil})});
+    const d=await r.json().catch(()=>({}));
+    if(r.status===401&&d.codigo==="acesso"){$("#f-codigo").hidden=false;$("#in-codigo").value="";$("#in-codigo").focus();if(LS.get("codigo",""))aviso($("#msg-home"),"Esse código não funcionou. Confira com quem te convidou.",true);return;}
+    if(!r.ok||!d.id){aviso($("#msg-home"),d.erro||"Não consegui começar agora. Tente de novo.",true);return;}
+    $("#prog-link").textContent=pedido.link||"Fala colada manualmente";
+    marcar(pedido.texto?"escrevendo":"fila");ver("prog");
+    acompanhar(d.id,pedido,perfil);
+  }catch(e){aviso($("#msg-home"),"Sem conexão com o servidor. Confira sua internet e tente de novo.",true);}
+  finally{$("#btn-go").disabled=false;}
+}
+
+const ORDEM=["fila","buscando","assistindo","escrevendo","pronto"];
+function marcar(etapa){
+  const i=ORDEM.indexOf(etapa);
+  document.querySelectorAll("#steps li").forEach(li=>{const j=ORDEM.indexOf(li.dataset.e);li.className=j<i?"done":(j===i||(etapa==="fila"&&j===1)?"on":"");});
+}
+function pararPolling(){S.cancelado=true;clearTimeout(S.polling);}
+$("#btn-cancelar").onclick=()=>{pararPolling();ver("home");toast("Cancelado");};
+
+function acompanhar(id,pedido,perfil){
+  S.cancelado=false;const inicio=Date.now();let falhas=0;
+  const tick=async()=>{
+    if(S.cancelado)return;
+    if(Date.now()-inicio>8*60*1000){ver("home");aviso($("#msg-home"),"Demorou mais que o normal. Tente de novo ou use outro vídeo.",true);return;}
+    try{
+      const r=await fetch("/api/status?id="+encodeURIComponent(id),{cache:"no-store"});
+      const t=await r.json();falhas=0;
+      if(S.cancelado)return;
+      if(t.etapa==="erro"){ver("home");aviso($("#msg-home"),t.erro||"Algo deu errado. Tente de novo.",true);return;}
+      if(t.etapa==="pronto"){concluir(t,pedido,perfil);return;}
+      marcar(t.etapa);
+    }catch(e){if(++falhas>5){ver("home");aviso($("#msg-home"),"Perdi a conexão com o servidor. Tente de novo.",true);return;}}
+    S.polling=setTimeout(tick,2500);
+  };
+  S.polling=setTimeout(tick,1500);
+}
+
+/* ---------- Resultado ---------- */
+function normalizar(r){
+  r=r||{};const x=r.raio_x_campeao||{};
+  const reels=(Array.isArray(r.variacoes_reels)?r.variacoes_reels:[]).map((v,i)=>{
+    const blocos=(Array.isArray(v.blocos_roteiro)?v.blocos_roteiro:[]).map(b=>({etapa:b.etapa||"",cena_visual:b.cena_visual||"",texto_tela:b.texto_tela||"",fala:b.fala||""}));
+    return {id:i+1,angulo:v.angulo||"",titulo_interno:v.titulo_interno||"Reel "+(i+1),tempo_estimado:v.tempo_estimado||"",blocos_roteiro:blocos,
+      texto_teleprompter:v.texto_teleprompter||blocos.map(b=>b.fala).join("\n\n"),sugestao_legenda:v.sugestao_legenda||""};
+  }).filter(v=>v.blocos_roteiro.length);
+  const c=r.carrossel||{};
+  return {raio_x_campeao:{tipo_gancho:x.tipo_gancho||"",por_que_funcionou:x.por_que_funcionou||"",formula_estrutural:x.formula_estrutural||"",nicho_detectado:x.nicho_detectado||""},
+    variacoes_reels:reels,
+    carrossel:{titulo_ideia:c.titulo_ideia||"Carrossel",legenda_carrossel:c.legenda_carrossel||"",slides:(Array.isArray(c.slides)?c.slides:[]).map((s,i)=>({numero_slide:s.numero_slide||i+1,titulo_slide:s.titulo_slide||"",texto_apoio:s.texto_apoio||"",sugestao_visual:s.sugestao_visual||""}))}};
+}
+function concluir(t,pedido,perfil){
+  const data=normalizar(t.resultado);
+  if(!data.variacoes_reels.length){ver("home");aviso($("#msg-home"),"A resposta veio incompleta. Tente de novo.",true);return;}
+  const h={id:t.id,criado:Date.now(),link:pedido.link||"",perfil:perfil&&perfil.nome||"",fonte:t.fonte||{},transcricao:t.transcricao||pedido.texto||"",data};
+  S.historico=[h,...S.historico.filter(x=>x.id!==h.id)].slice(0,40);LS.set("historico",S.historico);
+  S.atual=h;S.aba=0;S.modo="diretor";renderResultado();ver("result");$("#in-link").value="";toast("Roteiros prontos");
+}
+function tc(etapa,i){const m=String(etapa).match(/^(.*?)\s*\((.*?)\)\s*$/);return {nome:m?m[1]:etapa,tempo:m?m[2]:"",n:String(i+1).padStart(2,"0")};}
+function txtReel(v){let t=`*REEL ${v.id} · ${v.angulo}*\n_${v.titulo_interno}_${v.tempo_estimado?" · "+v.tempo_estimado:""}\n`;v.blocos_roteiro.forEach(b=>{t+=`\n*[${b.etapa}]*\n*CENA:* ${b.cena_visual}\n*TEXTO NA TELA:* ${b.texto_tela}\n*FALA:* ${b.fala}\n`;});if(v.sugestao_legenda)t+=`\n*LEGENDA:*\n${v.sugestao_legenda}`;return t;}
+function txtCar(c){let t=`*CARROSSEL · ${c.titulo_ideia}*\n`;c.slides.forEach(s=>{t+=`\n*Slide ${s.numero_slide}: ${s.titulo_slide}*\n${s.texto_apoio}\n_Visual: ${s.sugestao_visual}_\n`;});if(c.legenda_carrossel)t+=`\n*LEGENDA:*\n${c.legenda_carrossel}`;return t;}
+
+function renderResultado(){
+  const h=S.atual,r=h.data,x=r.raio_x_campeao,m=(h.fonte&&h.fonte.metricas)||{};
+  const abas=[...r.variacoes_reels.map(v=>"Reel "+v.id),"Carrossel"];
+  const stats=[m.visualizacoes&&`<span><b>${fmtN(m.visualizacoes)}</b> views</span>`,m.curtidas&&`<span><b>${fmtN(m.curtidas)}</b> curtidas</span>`,m.comentarios&&`<span><b>${fmtN(m.comentarios)}</b> comentários</span>`,m.compartilhamentos&&`<span><b>${fmtN(m.compartilhamentos)}</b> compart.</span>`].filter(Boolean).join("");
+  let corpo;
+  if(S.aba<r.variacoes_reels.length){
+    const v=r.variacoes_reels[S.aba];
+    corpo=`<div class="reel">
+      <div class="reel-meta"><span class="chip">${esc(v.angulo)}</span>${v.tempo_estimado?`<span class="chip time">${esc(v.tempo_estimado)}</span>`:""}</div>
+      <h3>${esc(v.titulo_interno)}</h3>
+      <div class="mode" role="group" aria-label="Visualização"><button type="button" data-modo="diretor" aria-pressed="${S.modo==="diretor"}">Modo diretor</button><button type="button" data-modo="leitura" aria-pressed="${S.modo==="leitura"}">Só as falas</button></div>
+      ${S.modo==="diretor"?`<div class="scenes">${v.blocos_roteiro.map((b,i)=>{const t=tc(b.etapa,i);return `<div class="scene"><div class="tc"><span class="n">${t.n}</span><span>${esc(t.nome)}</span>${t.tempo?`<span style="margin-left:auto;color:var(--muted)">${esc(t.tempo)}</span>`:""}</div>
+        <div class="cols"><div class="tela"><div class="k">Texto na tela</div><div class="v">${esc(b.texto_tela)}</div></div><div class="cena"><div class="k">Cena</div><div class="v">${esc(b.cena_visual)}</div></div><div class="fala"><div class="k">Fala</div><div class="v">${esc(b.fala)}</div></div></div></div>`;}).join("")}</div>`
+      :`<div class="tele-preview">${esc(v.texto_teleprompter)}</div>`}
+      ${v.sugestao_legenda?`<div><div class="lbl" style="margin-bottom:6px">Legenda sugerida</div><div class="caption">${esc(v.sugestao_legenda)}</div></div>`:""}
+      <div class="actions"><button type="button" class="btn dark" data-acao="tp">▶ Teleprompter</button><button type="button" class="btn" data-acao="copiar">Copiar roteiro</button><a class="btn" href="${wa(txtReel(v))}" target="_blank" rel="noopener">Enviar no WhatsApp</a></div>
+    </div>`;
+  }else{
+    const c=r.carrossel;
+    corpo=`<div class="reel"><div class="reel-meta"><span class="chip">${c.slides.length} slides</span></div><h3>${esc(c.titulo_ideia)}</h3>
+      <div class="slides">${c.slides.map((s,i)=>`<div class="slide${i===0?" first":""}"><div class="num">${String(s.numero_slide).padStart(2,"0")} / ${String(c.slides.length).padStart(2,"0")}</div><h4>${esc(s.titulo_slide)}</h4><p>${esc(s.texto_apoio)}</p><div class="vis">Visual: ${esc(s.sugestao_visual)}</div></div>`).join("")}</div>
+      ${c.legenda_carrossel?`<div><div class="lbl" style="margin-bottom:6px">Legenda sugerida</div><div class="caption">${esc(c.legenda_carrossel)}</div></div>`:""}
+      <div class="actions"><button type="button" class="btn" data-acao="copiar">Copiar carrossel</button><a class="btn" href="${wa(txtCar(c))}" target="_blank" rel="noopener">Enviar no WhatsApp</a></div></div>`;
+  }
+  $("#v-result").innerHTML=`<div class="result">
+    <div class="result-head">
+      <span class="badge">${esc(fmtData(h.criado))}${h.fonte&&h.fonte.autor?" · @"+esc(h.fonte.autor):""}${h.perfil?" · "+esc(h.perfil):""}</span>
+      <h2>${esc(x.nicho_detectado?"Vídeo campeão de "+x.nicho_detectado.toLowerCase():"Seu vídeo campeão, multiplicado")}</h2>
+      ${stats?`<div class="stats">${stats}</div>`:""}
+    </div>
+    <div class="xray"><div class="bar">Raio-X do vídeo campeão</div><dl>
+      <div><dt>Tipo de gancho</dt><dd style="font-weight:700;font-size:17px">${esc(x.tipo_gancho)}</dd></div>
+      <div><dt>Por que funcionou</dt><dd>${esc(x.por_que_funcionou)}</dd></div>
+      <div><dt>Fórmula</dt><dd class="formula">${esc(x.formula_estrutural)}</dd></div>
+      ${h.transcricao?`<details class="trans"><summary>Ver a fala do vídeo original</summary><div>${esc(h.transcricao)}</div></details>`:""}
+    </dl></div>
+    <div class="rtabs" role="tablist">${abas.map((a,i)=>`<button type="button" role="tab" data-aba="${i}" aria-selected="${i===S.aba}">${a}</button>`).join("")}</div>
+    ${corpo}
+    <button type="button" class="btn" data-acao="novo" style="align-self:flex-start">Multiplicar outro vídeo</button>
+  </div>`;
+}
+$("#v-result").addEventListener("click",e=>{
+  const t=e.target.closest("[data-aba],[data-modo],[data-acao]");if(!t)return;const r=S.atual.data;
+  if(t.dataset.aba!=null){S.aba=+t.dataset.aba;renderResultado();return;}
+  if(t.dataset.modo){S.modo=t.dataset.modo;renderResultado();return;}
+  const a=t.dataset.acao;
+  if(a==="copiar")copiar(S.aba<r.variacoes_reels.length?txtReel(r.variacoes_reels[S.aba]):txtCar(r.carrossel));
+  if(a==="tp")abrirTP(r.variacoes_reels[S.aba].texto_teleprompter);
+  if(a==="novo"){ver("home");$("#in-link").focus();}
+});
+
+/* ---------- Histórico ---------- */
+function renderHistorico(){
+  const box=$("#lista-historico");
+  if(!S.historico.length){box.innerHTML='<div class="empty">Nada por aqui ainda. Cada vídeo que você multiplicar fica salvo neste aparelho.</div>';return;}
+  box.innerHTML=S.historico.map(h=>{const x=h.data.raio_x_campeao;return `<div class="item">
+    <div class="s" style="font-family:var(--mono);font-size:12px">${esc(fmtData(h.criado))}${h.fonte&&h.fonte.autor?" · @"+esc(h.fonte.autor):""}</div>
+    <div class="t">${esc(h.data.carrossel.titulo_ideia||x.tipo_gancho)}</div>
+    <div class="s">${esc(h.link||"Fala colada")}</div>
+    <div class="row"><button type="button" class="btn small" data-a="abrir" data-id="${esc(h.id)}">Abrir</button><button type="button" class="btn small danger" data-a="del" data-id="${esc(h.id)}">Remover</button></div></div>`;}).join("");
+}
+$("#lista-historico").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-a]");if(!b)return;const id=b.dataset.id;
+  if(b.dataset.a==="abrir"){S.atual=S.historico.find(h=>h.id===id);S.aba=0;S.modo="diretor";renderResultado();ver("result");}
+  if(b.dataset.a==="del"){S.historico=S.historico.filter(h=>h.id!==id);LS.set("historico",S.historico);renderHistorico();toast("Removido");}
+});
+
+/* ---------- Teleprompter ---------- */
+const TP={on:false,raf:0,last:0,acc:0,lock:null};
+function abrirTP(txt){$("#tp-text").textContent=txt;$("#tp-text").style.fontSize=$("#tp-tam").value+"px";$("#tp").hidden=false;$("#tp-scroll").scrollTop=0;document.body.style.overflow="hidden";
+  try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>TP.lock=l).catch(()=>{});}catch(e){}}
+function pausaTP(){TP.on=false;cancelAnimationFrame(TP.raf);$("#tp-play").textContent="▶ Rolar";}
+function fecharTP(){pausaTP();$("#tp").hidden=true;document.body.style.overflow="";try{TP.lock&&TP.lock.release();}catch(e){}TP.lock=null;}
+function passo(ts){if(!TP.on)return;const dt=TP.last?(ts-TP.last)/1000:0;TP.last=ts;const sc=$("#tp-scroll");TP.acc+=dt*(+$("#tp-vel").value);const px=Math.floor(TP.acc);if(px>0){sc.scrollTop+=px;TP.acc-=px;}
+  if(sc.scrollTop+sc.clientHeight>=sc.scrollHeight-2){pausaTP();return;}TP.raf=requestAnimationFrame(passo);}
+$("#tp-play").onclick=()=>{if(TP.on)pausaTP();else{TP.on=true;TP.last=0;TP.acc=0;$("#tp-play").textContent="❚❚ Pausar";TP.raf=requestAnimationFrame(passo);}};
+$("#tp-tam").oninput=e=>$("#tp-text").style.fontSize=e.target.value+"px";
+$("#tp-mirror").onclick=()=>$("#tp-text").classList.toggle("mirror");
+$("#tp-close").onclick=fecharTP;
+$("#tp-scroll").addEventListener("click",()=>$("#tp-play").click());
+document.addEventListener("keydown",e=>{if($("#tp").hidden)return;if(e.key==="Escape")fecharTP();if(e.key===" "){e.preventDefault();$("#tp-play").click();}});
+
+/* ---------- Início ---------- */
+renderSelect();
+const q=new URLSearchParams(location.search).get("link"); // permite abrir já com um link: ?link=...
+if(q){$("#in-link").value=q;}
+})();
+</script>
+</body>
+</html>
