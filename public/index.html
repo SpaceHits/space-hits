@@ -9,9 +9,9 @@
 <link rel="icon" type="image/png" href="/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&family=Michroma&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500;600&family=Michroma&family=Montserrat:wght@300;400&family=Mr+Dafoe&display=swap">
 <style>
-/* Layout: campo único no centro (estilo buscador) sobre um céu escuro discreto; faixa de palavras e 3 cards numerados abaixo.
+/* Layout: herói em duas colunas (título "Raio-X de vídeos Virais" + celular com a mão em raio-X), campo único logo abaixo e 3 cards numerados.
    Resultado em coluna única de até 760px. Visual escuro de propósito (identidade Space Media). */
 :root{
   --void:#07060F; --deep:#0E0C1D; --panel:#141127; --panel2:#1B1734; --line:#2A2547; --line2:#3A3460;
@@ -23,6 +23,8 @@
   --body:"Archivo","Helvetica Neue",Arial,sans-serif;
   --marca:"Michroma","Archivo",Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --fina:"Montserrat","Helvetica Neue",Arial,sans-serif;
+  --script:"Mr Dafoe","Brush Script MT",cursive;
   --r:14px; color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -55,37 +57,50 @@ header .sp{flex:1}
 main{padding-block:0 40px}
 
 /* Início */
-.home{display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px;padding-block:clamp(40px,11vh,110px) 36px}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-.eyebrow b{color:var(--ouro);font-weight:500}
-.home h1{margin:0;font-family:var(--display);font-stretch:118%;font-weight:850;font-size:clamp(32px,7.4vw,60px);line-height:1.02;letter-spacing:-.025em;text-wrap:balance;max-width:16ch}
-.ouro{color:var(--ouro)}
-.home p.sub{margin:0;color:var(--muted);font-size:16.5px;max-width:48ch;text-wrap:pretty}
-#f-link{width:100%;max-width:680px}
-.busca{position:relative;display:flex;align-items:center;gap:6px;background:rgba(20,17,39,.86);border:1px solid var(--line2);border-radius:18px;padding:7px 7px 7px 18px;backdrop-filter:blur(8px);transition:border-color .2s,box-shadow .2s}
-.busca:focus-within{border-color:transparent;box-shadow:0 0 0 1.5px var(--roxo),0 0 0 6px rgba(123,77,255,.16),0 18px 50px -20px rgba(58,107,255,.6)}
-.busca #in-link{flex:1;min-width:0;border:0;background:none;padding:14px 0;font-size:16px;outline:none;color:var(--text);border-radius:0}
-.busca input::placeholder{color:var(--dim)}
-.colar{background:none;border:0;color:var(--muted);font-weight:600;font-size:13px;padding:8px 10px;cursor:pointer;border-radius:8px}
-.colar:hover{color:var(--text)}
-.go{display:inline-flex;align-items:center;gap:9px;background:var(--grad);color:#fff;border:0;border-radius:13px;padding:14px 20px;font-family:var(--display);font-stretch:112%;font-weight:800;font-size:15.5px;cursor:pointer;white-space:nowrap;transition:filter .15s,transform .15s}
+.home{display:flex;flex-direction:column;align-items:center;gap:34px;padding-block:clamp(24px,6vh,64px) 36px}
+.heroi{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center;gap:clamp(20px,5vw,64px);width:100%}
+.heroi-txt{display:flex;flex-direction:column;gap:22px;min-width:0}
+.titulo{margin:0;position:relative;display:flex;flex-direction:column;line-height:1;font-weight:400}
+.titulo .t1{align-self:flex-end;margin-right:4%;font-family:var(--fina);font-weight:400;font-size:clamp(20px,3.1vw,36px);letter-spacing:.02em;color:var(--text);position:relative;z-index:1}
+.titulo .t2{font-family:var(--script);color:var(--ouro);font-size:clamp(108px,16vw,190px);line-height:.72;margin-top:-.32em;margin-left:-.04em;letter-spacing:.01em;text-shadow:0 0 40px rgba(255,212,0,.18);padding-bottom:.12em}
+.heroi-txt .sub{margin:0 0 0 clamp(0px,7%,60px);font-family:var(--fina);font-weight:300;font-size:clamp(17px,2vw,21px);line-height:1.45;color:#C9C5DE;max-width:24ch;text-wrap:balance}
+.heroi-txt .sub2{margin:0 0 0 clamp(0px,7%,60px);font-size:15.5px;line-height:1.5;color:var(--text);max-width:40ch}
+.heroi-txt .sub2 b{color:var(--ouro);font-weight:700}
+/* Celular */
+.fone-area{display:flex;justify-content:center;perspective:1200px}
+.fone{position:relative;width:min(280px,64vw);aspect-ratio:9/18.5;border-radius:42px;border:3px solid #E9E6F5;background:#000;transform:rotate(12deg);
+  box-shadow:0 0 0 1px rgba(255,255,255,.05),0 0 40px rgba(123,77,255,.55),0 0 120px rgba(58,107,255,.3);overflow:hidden;animation:flutua 7s ease-in-out infinite}
+@keyframes flutua{50%{transform:rotate(11deg) translateY(-10px)}}
+.fone::before{content:"";position:absolute;top:12px;left:50%;width:30%;height:5px;border-radius:5px;background:#1A1A22;transform:translateX(-50%);z-index:3}
+.fone .vitrine{position:absolute;inset:0;-webkit-mask-image:linear-gradient(#000 0,#000 16%,transparent 30%,transparent 72%,#000 86%);mask-image:linear-gradient(#000 0,#000 16%,transparent 30%,transparent 72%,#000 86%)}
+.fone .feed{position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;gap:22px;padding-top:12px;animation:sobe 26s linear infinite;font-family:var(--marca);font-size:10.5px;letter-spacing:.22em;color:rgba(170,160,230,.5);white-space:nowrap;padding-top:34px}
+.fone .feed span::before{content:"✦ ";color:rgba(255,212,0,.6)}
+@keyframes sobe{to{transform:translateY(-50%)}}
+.fone .mao{position:absolute;left:0;top:50%;width:88%;transform:translateY(-54%);filter:drop-shadow(0 0 16px rgba(110,170,255,.35));z-index:2}
+.fone .reflexo{position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.07),transparent 38%);z-index:4;pointer-events:none}
+@media (max-width:760px){
+  .heroi{grid-template-columns:1fr;justify-items:center;text-align:left}
+  .fone-area{order:2}.heroi-txt{order:1;width:100%}
+  .fone{width:min(210px,56vw)}
+}
+#f-link{width:100%;max-width:760px}
+.busca{position:relative;display:flex;align-items:center;gap:6px;background:rgba(20,17,39,.86);border:1.5px solid rgba(123,77,255,.7);border-radius:22px;padding:8px 8px 8px 22px;backdrop-filter:blur(8px);box-shadow:0 0 0 5px rgba(123,77,255,.1),0 18px 60px -24px rgba(58,107,255,.7);transition:border-color .2s,box-shadow .2s}
+.busca:focus-within{border-color:var(--roxo);box-shadow:0 0 0 1px var(--roxo),0 0 0 7px rgba(123,77,255,.18),0 18px 60px -20px rgba(58,107,255,.8)}
+.busca #in-link{flex:1;min-width:0;border:0;background:none;padding:16px 0;font-size:17px;outline:none;color:var(--text);border-radius:0}
+.busca #in-link::placeholder{color:var(--dim)}
+.go{display:inline-flex;align-items:center;gap:9px;background:var(--grad);color:#fff;border:0;border-radius:15px;padding:15px 24px;font-family:var(--display);font-stretch:112%;font-weight:800;font-size:16px;cursor:pointer;white-space:nowrap;transition:filter .15s,transform .15s}
 .go:hover{filter:brightness(1.12)}
 .go:active{transform:scale(.98)}
 .go img{height:14px;width:auto}
 .go[disabled]{opacity:.55;cursor:wait}
-@media (max-width:520px){.busca{flex-wrap:wrap;padding:8px}.busca #in-link{flex-basis:100%;padding:12px 8px}.colar{order:2}.go{order:3;flex:1;justify-content:center}}
-.sob{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 18px;font-size:13px;color:var(--muted)}
-.plat{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
-.sob select{width:auto;padding:5px 8px;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--text)}
+@media (max-width:520px){.busca{flex-wrap:wrap;padding:8px}.busca #in-link{flex-basis:100%;padding:12px 10px}.go{flex:1;justify-content:center}}
+.sob{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 18px;font-size:13px;color:var(--muted);margin-top:-14px}
+.plat{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.perfil-ativo{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:3px 4px 3px 10px;border:1px solid var(--line2);border-radius:999px;color:var(--muted)}
+.perfil-ativo button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:2px 6px;border-radius:99px}
+.perfil-ativo button:hover{color:var(--text);background:var(--panel2)}
 .linkish{background:none;border:0;padding:0;color:var(--text);font-weight:600;cursor:pointer;font-size:13px;text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:3px}
-.linkish:hover{text-decoration-color:var(--ouro)}
-.home .panel{width:100%;max-width:680px;text-align:left}
-
-/* Faixa */
-.faixa{position:relative;z-index:1;border-block:1px solid var(--line);overflow:hidden;padding-block:13px;background:rgba(14,12,29,.6)}
-.faixa .trilho{display:flex;gap:28px;width:max-content;animation:correr 46s linear infinite;font-family:var(--marca);font-size:12px;letter-spacing:.2em;color:var(--muted);white-space:nowrap}
-.faixa .trilho span::after{content:"✦";color:var(--ouro);margin-left:28px}
-@keyframes correr{to{transform:translateX(-50%)}}
+.home .panel{width:100%;max-width:760px;text-align:left}
 
 /* Cards */
 .passos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding-block:44px 20px}
@@ -266,31 +281,32 @@ details.corr form{margin-top:10px;display:flex;flex-direction:column;gap:8px}
   <section id="v-home">
     <div class="wrap">
       <div class="home">
-        <div class="eyebrow">// Raio-X de vídeos <b>virais</b></div>
-        <h1>Cole o vídeo que <span class="ouro">bombou</span>. Receba os próximos roteiros.</h1>
-        <p class="sub">A ferramenta assiste ao vídeo, descobre o que fez ele parar o feed e escreve 3 novos Reels e um carrossel com o mesmo mecanismo.</p>
+        <div class="heroi">
+          <div class="heroi-txt">
+            <h1 class="titulo"><span class="t1">RAIO-X DE VÍDEOS</span><span class="t2">Virais</span></h1>
+            <p class="sub">Descubra os pontos fortes, os ganchos e a estrutura de tudo que viraliza.</p>
+            <p class="sub2">Faça a radiografia <b>do vídeo que bombou</b> e receba grátis uma análise com roteiros e insights para gravar seus conteúdos.</p>
+          </div>
+          <div class="fone-area" aria-hidden="true">
+            <div class="fone">
+              <div class="vitrine"><div class="feed" id="feed"></div></div>
+              <img class="mao" src="/img/mao-raio-x.png" alt="">
+              <div class="reflexo"></div>
+            </div>
+          </div>
+        </div>
 
         <form id="f-link" novalidate>
           <div class="busca">
             <input type="text" id="in-link" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cole o link do Reel, TikTok ou Short" aria-label="Link do vídeo">
-            <button type="button" class="colar" id="btn-colar">Colar</button>
             <button type="submit" class="go" id="btn-go"><img src="/img/foguete.png" alt="" aria-hidden="true">Analisar</button>
           </div>
         </form>
 
         <div class="sob">
           <span class="plat">Instagram · TikTok · YouTube</span>
-          <label for="sel-perfil" style="display:flex;align-items:center;gap:6px">Perfil <select id="sel-perfil"></select></label>
-          <button type="button" class="linkish" id="btn-texto">Sem link? Colar a fala</button>
+          <span class="perfil-ativo" id="perfil-ativo" hidden></span>
         </div>
-
-        <form class="panel" id="f-texto" hidden novalidate>
-          <div class="field">
-            <label for="in-texto">Fala do vídeo</label>
-            <textarea id="in-texto" placeholder="Cole aqui o que é falado no vídeo campeão."></textarea>
-          </div>
-          <div class="row"><button type="submit" class="btn forte">Analisar esta fala</button><button type="button" class="btn" id="btn-texto-fechar">Voltar ao link</button></div>
-        </form>
 
         <form class="panel" id="f-codigo" hidden novalidate>
           <div class="field">
@@ -304,8 +320,6 @@ details.corr form{margin-top:10px;display:flex;flex-direction:column;gap:8px}
         <div id="msg-home" hidden style="width:100%;max-width:680px"></div>
       </div>
     </div>
-
-    <div class="faixa" aria-hidden="true"><div class="trilho" id="trilho"></div></div>
 
     <div class="wrap largo">
       <div class="passos">
@@ -426,7 +440,7 @@ const wa=t=>"https://wa.me/?text="+encodeURIComponent(t);
   tam();addEventListener("resize",tam);REDUZ?desenha(0):requestAnimationFrame(loop);
 })();
 const PALAVRAS=["GANCHO","RETENÇÃO","PERGUNTA NA CABEÇA","CTA","RAIO-X","VIRALIZOU","MECANISMO","TELEPROMPTER"];
-$("#trilho").innerHTML=[...PALAVRAS,...PALAVRAS].map(p=>`<span>${p}</span>`).join("");
+$("#feed").innerHTML=[...PALAVRAS,...PALAVRAS,...PALAVRAS,...PALAVRAS].map(p=>`<span>${p}</span>`).join("");
 
 /* ---------- Estado ---------- */
 const S={perfis:LS.get("perfis",[]),historico:LS.get("historico",[]),atual:null,aba:0,modo:"diretor",editando:null,polling:null,cancelado:false,ultimoPedido:null,parcialMostrado:false,confirmar:null};
@@ -442,12 +456,13 @@ $("#nav-historico").onclick=()=>{renderHistorico();ver("historico");};
 /* ---------- Perfis ---------- */
 const CAMPOS=["nome","nicho","publico","tom","objetivo","direcao"];
 function salvarPerfis(){LS.set("perfis",S.perfis);}
+// Sem seletor na tela inicial: o perfil é escolhido em "Perfis" e aparece aqui como um selo discreto.
 function renderSelect(){
-  const sel=$("#sel-perfil"),atual=LS.get("perfil_sel","");
-  sel.innerHTML='<option value="">Automático</option>'+S.perfis.map(p=>`<option value="${esc(p.id)}">${esc(p.nome)}</option>`).join("")+'<option value="__novo">+ Novo perfil…</option>';
-  sel.value=S.perfis.some(p=>p.id===atual)?atual:"";
+  const id=LS.get("perfil_sel",""),p=S.perfis.find(x=>x.id===id),el=$("#perfil-ativo");
+  if(!p){el.hidden=true;return;}
+  el.innerHTML=`Perfil: ${esc(p.nome)} <button type="button" aria-label="Usar modo automático" title="Usar modo automático">×</button>`;el.hidden=false;
+  el.querySelector("button").onclick=()=>{LS.set("perfil_sel","");renderSelect();toast("Modo automático");};
 }
-$("#sel-perfil").onchange=e=>{if(e.target.value==="__novo"){e.target.value=LS.get("perfil_sel","");abrirPerfil(null);return;}LS.set("perfil_sel",e.target.value);};
 function renderPerfis(){
   const box=$("#lista-perfis");
   if(!S.perfis.length){box.innerHTML='<div class="empty">Nenhum perfil salvo. No modo automático, a ferramenta escreve no tom do próprio vídeo.</div>';return;}
@@ -472,11 +487,7 @@ $("#f-perfil").addEventListener("submit",e=>{e.preventDefault();const d={};CAMPO
   const p={...d,id:S.editando||uid()};S.perfis=[p,...S.perfis.filter(x=>x.id!==p.id)];salvarPerfis();LS.set("perfil_sel",p.id);fecharPerfil();renderPerfis();renderSelect();toast("Perfil salvo");});
 
 /* ---------- Envio ---------- */
-$("#btn-colar").onclick=async()=>{try{const t=await navigator.clipboard.readText();if(t){$("#in-link").value=t.trim();$("#in-link").focus();}}catch(e){$("#in-link").focus();toast("Toque e segure no campo para colar");}};
-$("#btn-texto").onclick=()=>{$("#f-texto").hidden=false;$("#in-texto").focus();};
-$("#btn-texto-fechar").onclick=()=>{$("#f-texto").hidden=true;};
 $("#f-link").addEventListener("submit",e=>{e.preventDefault();const l=$("#in-link").value.trim();if(!l){aviso($("#msg-home"),"Cole o link do vídeo que deu certo.",true);return;}enviar({link:l});});
-$("#f-texto").addEventListener("submit",e=>{e.preventDefault();enviar({texto:$("#in-texto").value.trim()});});
 $("#f-codigo").addEventListener("submit",e=>{e.preventDefault();LS.set("codigo",$("#in-codigo").value.trim());$("#f-codigo").hidden=true;if(S.ultimoPedido)enviar(S.ultimoPedido);});
 function perfilAtual(){const id=LS.get("perfil_sel","");const p=S.perfis.find(x=>x.id===id);if(!p)return null;const o={};CAMPOS.forEach(k=>{if(p[k])o[k]=p[k];});return o;}
 
