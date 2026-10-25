@@ -1,8 +1,9 @@
-// Função de segundo plano (até 15 minutos): baixa, assiste, escreve.
+// Função de segundo plano (até 15 minutos): busca, analisa, escreve.
 // Etapas gravadas na tarefa: fila → buscando → assistindo → escrevendo → pronto | erro
+// Na etapa "escrevendo" o Raio-X já fica disponível, para a página mostrar antes dos roteiros.
 import { lerTarefa, salvarTarefa } from "../lib/tarefas.mjs";
 import { buscarVideo, baixarVideo, ErroAmigavel } from "../lib/fontes.mjs";
-import { assistirVideo, escreverRoteiros, montarPrompt } from "../lib/ia.mjs";
+import { analisarVideo, escreverRoteiros, montarPrompt } from "../lib/ia.mjs";
 import { extrairQuadros } from "../lib/quadros.mjs";
 
 export default async (req) => {
@@ -10,33 +11,38 @@ export default async (req) => {
   try { ({ id } = await req.json()); } catch { return; }
   const t = await lerTarefa(id);
   if (!t || t.etapa !== "fila") return; // evita reprocessar em novas tentativas
+  await salvarTarefa(id, { etapa: t.texto ? "assistindo" : t.link.plataforma === "youtube" ? "assistindo" : "buscando" });
 
   try {
-    let video, fonte = {}, quadros = [], capa = null;
+    let analise, fonte = {}, quadros = [], capa = null;
+    const correcao = t.correcao || null;
 
     if (t.texto) {
-      video = { transcricao: t.texto, gancho_visual: "", textos_na_tela: "", ritmo_edicao: "", tem_fala: true };
+      analise = await analisarVideo({ texto: t.texto, correcao });
     } else if (t.link.plataforma === "youtube") {
-      await salvarTarefa(id, { etapa: "assistindo" });
       const vid = new URL(t.link.url).searchParams.get("v");
       if (vid) capa = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
-      video = await assistirVideo({ youtubeUrl: t.link.url });
+      analise = await analisarVideo({ youtubeUrl: t.link.url, correcao });
     } else {
-      await salvarTarefa(id, { etapa: "buscando" });
       fonte = await buscarVideo(t.link, process.env.APIFY_TOKEN);
       await salvarTarefa(id, { etapa: "assistindo", fonte: { autor: fonte.autor, metricas: fonte.metricas } });
       const arquivo = await baixarVideo(fonte.arquivo);
-      // Assiste com o Gemini e tira os prints do gancho ao mesmo tempo.
-      [video, quadros] = await Promise.all([assistirVideo({ video: arquivo }), extrairQuadros(id, arquivo.buffer)]);
+      // Analisa com o Gemini e tira os prints do gancho ao mesmo tempo.
+      [analise, quadros] = await Promise.all([
+        analisarVideo({ video: arquivo, correcao, legenda: fonte.legenda }),
+        extrairQuadros(id, arquivo.buffer),
+      ]);
     }
 
-    if (!video.tem_fala && !video.ritmo_edicao) throw new ErroAmigavel("Não consegui entender esse vídeo. Tente outro link.");
+    if (!analise.raio_x.elemento_central && !analise.transcricao) throw new ErroAmigavel("Não consegui entender esse vídeo. Tente outro link.");
 
-    const analise = { gancho_visual: video.gancho_visual, textos_na_tela: video.textos_na_tela, ritmo_edicao: video.ritmo_edicao };
-    await salvarTarefa(id, { etapa: "escrevendo", transcricao: video.transcricao, analise, quadros, capa });
-    const { dados, motor } = await escreverRoteiros(montarPrompt({ perfil: t.perfil, video, fonte }));
+    const raioX = { ...analise.raio_x };
+    const visual = { resumo: analise.resumo, gancho_visual: analise.gancho_visual, textos_na_tela: analise.textos_na_tela, ritmo_edicao: analise.ritmo_edicao };
+    await salvarTarefa(id, { etapa: "escrevendo", transcricao: analise.transcricao, raio_x: raioX, autenticidade: analise.autenticidade, analise: visual, quadros, capa });
 
-    await salvarTarefa(id, { etapa: "pronto", resultado: dados, motor, concluido: Date.now() });
+    const { dados, motor } = await escreverRoteiros(montarPrompt({ perfil: t.perfil, analise, fonte }));
+    const resultado = { raio_x_campeao: raioX, variacoes_reels: dados.variacoes_reels, carrossel: dados.carrossel };
+    await salvarTarefa(id, { etapa: "pronto", resultado, motor, concluido: Date.now() });
   } catch (e) {
     const amigavel = e instanceof ErroAmigavel;
     if (!amigavel) console.error("Falha na tarefa", id, e);

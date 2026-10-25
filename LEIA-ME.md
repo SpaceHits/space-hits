@@ -19,6 +19,8 @@ Cole o link de um vídeo que deu certo (Instagram, TikTok ou YouTube) e receba o
 | `APIFY_TOKEN` | Sim, para Instagram e TikTok | apify.com → Settings → API & Integrations |
 | `ANTHROPIC_API_KEY` | Recomendada (roteiros melhores) | console.anthropic.com → API Keys |
 | `CODIGO_ACESSO` | Recomendada | Invente um código (ex.: `beta2026`). Vários separados por vírgula. Sem ele, qualquer pessoa com o link gasta seus créditos. |
+| `GEMINI_MODEL_ANALISE` | Não | Modelo que assiste e analisa o vídeo (o "olho"). Padrão: `gemini-4-argon`; se indisponível, cai para o Flash |
+| `GEMINI_FPS` | Não | Quadros por segundo que a IA enxerga. Padrão: 4 |
 | `GEMINI_MODEL` | Não | Padrão: `gemini-3.8-flash` |
 | `GEMINI_MODEL_RESERVA` | Não | Usado quando o principal está sobrecarregado. Padrão: `gemini-3.6-flash` |
 | `CLAUDE_MODEL` | Não | Padrão: `claude-sonnet-5-5` |
@@ -26,3 +28,8 @@ Cole o link de um vídeo que deu certo (Instagram, TikTok ou YouTube) e receba o
 ## Trocar o nome do produto
 
 Em `public/index.html`, mude a linha `const APP = "Space Hits";` e o `<title>`.
+
+## Ensinar o olhar da ferramenta
+
+O arquivo `netlify/lib/metodo.mjs` guarda o **Método Space Media**: os critérios de análise, as expressões proibidas
+(análise genérica) e exemplos de análise ruim × boa. Para deixar a ferramenta mais assertiva, adicione exemplos seus em `EXEMPLOS`.

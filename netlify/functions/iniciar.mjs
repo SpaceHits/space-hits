@@ -1,4 +1,4 @@
-// POST /api/iniciar  { link?, texto?, perfil? }  ->  { id }
+// POST /api/iniciar  { link?, texto?, perfil?, correcao? }  ->  { id }
 // Valida o pedido, cria a tarefa e dispara o processamento em segundo plano.
 import { detectarLink } from "../lib/links.mjs";
 import { salvarTarefa, json, acessoLiberado } from "../lib/tarefas.mjs";
@@ -23,8 +23,11 @@ export default async (req) => {
     if (link.tipo === "perfil") return json({ erro: "A análise de perfil chega na próxima etapa. Por enquanto, cole o link de um vídeo.", codigo: "perfil" }, 400);
   }
 
+  // Correção opcional do usuário quando a análise errou ("A análise errou? Corrija em uma frase").
+  const correcao = String(corpo.correcao || "").trim().slice(0, 500) || null;
+
   const id = crypto.randomUUID();
-  await salvarTarefa(id, { id, etapa: "fila", criado: Date.now(), link, texto: texto || null, perfil });
+  await salvarTarefa(id, { id, etapa: "fila", criado: Date.now(), link, texto: texto || null, perfil, correcao });
 
   // Dispara a função de segundo plano (responde 202 na hora).
   // Se a chamada interna falhar (ex.: site com proteção de acesso), a página dispara pelo navegador.
