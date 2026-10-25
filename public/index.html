@@ -106,8 +106,11 @@ main{padding-block:0 40px}
 /* Cards */
 .passos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding-block:44px 20px}
 @media (max-width:760px){.passos{grid-template-columns:1fr}}
-.passo{position:relative;background:linear-gradient(180deg,rgba(27,23,52,.85),rgba(20,17,39,.85));border:1px solid var(--line);border-radius:var(--r);padding:22px 20px 24px;display:flex;flex-direction:column;gap:10px;transition:transform .25s,border-color .25s}
-.passo:hover{transform:translateY(-3px);border-color:var(--line2)}
+.passo{position:relative;overflow:hidden;isolation:isolate;background:linear-gradient(180deg,rgba(27,23,52,.85),rgba(20,17,39,.85));border:1.5px solid var(--line);border-radius:var(--r);padding:22px 20px 24px;display:flex;flex-direction:column;gap:10px;transition:transform .3s,border-color .3s,box-shadow .3s}
+/* sombreamento azul no canto inferior direito, aparece no mouse over */
+.passo::after{content:"";position:absolute;right:-30%;bottom:-45%;width:90%;height:110%;background:radial-gradient(closest-side,rgba(58,107,255,.62),rgba(123,77,255,.24) 55%,transparent);opacity:0;transition:opacity .35s;z-index:-1;pointer-events:none}
+.passo:hover,.passo:focus-within{transform:translateY(-3px);border-color:rgba(123,77,255,.7);box-shadow:0 0 0 5px rgba(123,77,255,.12),0 0 28px rgba(123,77,255,.35),0 18px 60px -24px rgba(58,107,255,.8)}
+.passo:hover::after,.passo:focus-within::after{opacity:1}
 .passo .n{font-family:var(--mono);font-size:12px;color:var(--ouro);letter-spacing:.08em}
 .passo h3{margin:0;font-family:var(--display);font-stretch:115%;font-weight:800;font-size:19px;line-height:1.2}
 .passo p{margin:0;color:var(--muted);font-size:14px}
