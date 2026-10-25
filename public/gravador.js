@@ -8,6 +8,7 @@
     set(k, v) { try { localStorage.setItem("rc_" + k, JSON.stringify(v)); } catch (e) {} },
   };
   const TIPOS = ["video/mp4;codecs=avc1.42E01E,mp4a.40.2", "video/mp4;codecs=avc1,mp4a", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"];
+  const IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const tipoGravacao = () => (window.MediaRecorder && MediaRecorder.isTypeSupported) ? (TIPOS.find(t => { try { return MediaRecorder.isTypeSupported(t); } catch (e) { return false; } }) || "") : "";
 
   const el = document.createElement("div");
@@ -135,7 +136,17 @@
     pararCamera();
     const ehMp4 = /mp4/.test(tipo);
     $("#gv-nota").textContent = ehMp4 ? "Vídeo em MP4, pronto para o Instagram, TikTok e WhatsApp." : "Este navegador gravou em WebM. O WhatsApp aceita; para o Instagram, prefira gravar pelo Safari (iPhone) ou por um Chrome atualizado.";
-    $("#gv-compartilhar").hidden = !(navigator.canShare && navigator.canShare({ files: [arquivo()] }));
+    const podeCompartilhar = !!(navigator.canShare && navigator.canShare({ files: [arquivo()] }));
+    $("#gv-compartilhar").hidden = !podeCompartilhar;
+    if (IOS && podeCompartilhar) {
+      // No iPhone, o menu do sistema já oferece "Salvar Vídeo" (Fotos) e "Salvar em Arquivos".
+      $("#gv-compartilhar").textContent = "Salvar ou compartilhar";
+      $("#gv-salvar").hidden = true;
+      $("#gv-nota").textContent = "Toque em Salvar ou compartilhar e escolha: Salvar Vídeo (vai para Fotos) ou Salvar em Arquivos. Dá para mandar direto para o Instagram e o WhatsApp também.";
+    } else {
+      $("#gv-compartilhar").textContent = "Compartilhar";
+      $("#gv-salvar").hidden = false;
+    }
   }
   function arquivo() {
     const ext = st.blob && /mp4/.test(st.blob.type) ? "mp4" : "webm";
@@ -148,7 +159,7 @@
   $("#gv-regravar").onclick = async () => { $("#gv-revisao").hidden = true; $("#gv-rev").removeAttribute("src"); $("#gv-texto-box").scrollTop = 0; await ligarCamera(); };
   $("#gv-salvar").onclick = () => {
     const f = arquivo(); const a = document.createElement("a"); a.href = st.url; a.download = f.name; document.body.appendChild(a); a.click(); a.remove();
-    $("#gv-nota").textContent = "Pronto! No iPhone, o vídeo aparece em Arquivos > Transferências; abra e toque em compartilhar > Salvar vídeo para mandar para a galeria.";
+    $("#gv-nota").textContent = IOS ? "Salvo em Arquivos > Transferências. Para levar para Fotos, abra o vídeo lá e toque em Compartilhar > Salvar Vídeo." : "Pronto! O vídeo foi para a pasta de downloads do aparelho.";
   };
   $("#gv-compartilhar").onclick = async () => {
     try { await navigator.share({ files: [arquivo()], title: "Vídeo gravado no Space Hits" }); }
