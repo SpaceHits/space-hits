@@ -68,15 +68,15 @@ main{padding-block:0 40px}
 .heroi-txt .sub2 b{color:var(--ouro);font-weight:700}
 /* Celular */
 .fone-area{display:flex;justify-content:center;perspective:1200px}
-.fone{position:relative;width:min(280px,64vw);aspect-ratio:9/18.5;border-radius:42px;border:3px solid #E9E6F5;background:#000;transform:rotate(12deg);
+.fone{position:relative;width:min(290px,64vw);aspect-ratio:941/1672;border-radius:42px;border:3px solid #E9E6F5;background:#000;transform:rotate(12deg);
   box-shadow:0 0 0 1px rgba(255,255,255,.05),0 0 40px rgba(123,77,255,.55),0 0 120px rgba(58,107,255,.3);overflow:hidden;animation:flutua 7s ease-in-out infinite}
 @keyframes flutua{50%{transform:rotate(11deg) translateY(-10px)}}
 .fone::before{content:"";position:absolute;top:12px;left:50%;width:30%;height:5px;border-radius:5px;background:#1A1A22;transform:translateX(-50%);z-index:3}
-.fone .vitrine{position:absolute;inset:0;-webkit-mask-image:linear-gradient(#000 0,#000 16%,transparent 30%,transparent 72%,#000 86%);mask-image:linear-gradient(#000 0,#000 16%,transparent 30%,transparent 72%,#000 86%)}
+.fone .vitrine{position:absolute;inset:0;z-index:2;-webkit-mask-image:linear-gradient(#000 0,#000 9%,transparent 14%,transparent 84%,#000 89%);mask-image:linear-gradient(#000 0,#000 9%,transparent 14%,transparent 84%,#000 89%)}
 .fone .feed{position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;gap:22px;padding-top:12px;animation:sobe 26s linear infinite;font-family:var(--marca);font-size:10.5px;letter-spacing:.22em;color:rgba(170,160,230,.5);white-space:nowrap;padding-top:34px}
 .fone .feed span::before{content:"✦ ";color:rgba(255,212,0,.6)}
 @keyframes sobe{to{transform:translateY(-50%)}}
-.fone .mao{position:absolute;left:0;top:50%;width:88%;transform:translateY(-54%);filter:drop-shadow(0 0 16px rgba(110,170,255,.35));z-index:2}
+.fone .tela{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
 .fone .reflexo{position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.07),transparent 38%);z-index:4;pointer-events:none}
 @media (max-width:760px){
   .heroi{grid-template-columns:1fr;justify-items:center;text-align:left}
@@ -290,7 +290,7 @@ details.corr form{margin-top:10px;display:flex;flex-direction:column;gap:8px}
           <div class="fone-area" aria-hidden="true">
             <div class="fone">
               <div class="vitrine"><div class="feed" id="feed"></div></div>
-              <img class="mao" src="/img/mao-raio-x.png" alt="">
+              <img class="tela" src="/img/tela-raio-x.jpg" alt="" width="941" height="1672">
               <div class="reflexo"></div>
             </div>
           </div>
