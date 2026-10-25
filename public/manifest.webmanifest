@@ -1,0 +1,17 @@
+{
+  "name": "Space Hits · Raio-X de vídeos virais",
+  "short_name": "Space Hits",
+  "description": "Cole o link do vídeo que bombou e receba o Raio-X e novos roteiros prontos para gravar.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07080E",
+  "theme_color": "#07080E",
+  "icons": [
+    { "src": "/img/app-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/img/app-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/img/app-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

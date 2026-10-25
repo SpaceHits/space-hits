@@ -9,3 +9,13 @@
 [functions."processar-background"]
   external_node_modules = ["ffmpeg-static"]
   included_files = ["node_modules/ffmpeg-static/ffmpeg"]
+
+# O service worker e o manifesto nunca ficam presos em cache.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
