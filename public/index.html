@@ -37,9 +37,15 @@ a{color:inherit}
 
 /* Céu */
 #ceu{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.fundo{position:absolute;left:0;right:0;top:0;height:max(1920px,151vw);z-index:0;pointer-events:none;
-  background:url(/img/fundo-space.webp) top center/max(100%,1271px) auto no-repeat;
-  -webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+/* Fundo da Space Media: nunca ampliado além do tamanho original (1271px), para não perder nitidez.
+   Em telas mais largas, as laterais se fundem no preto. */
+.fundo{position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(100%,1271px);height:1860px;z-index:0;pointer-events:none;
+  background:url(/img/fundo-space.webp) center -60px/1271px auto no-repeat;
+  -webkit-mask-image:linear-gradient(#000 68%,transparent);mask-image:linear-gradient(#000 68%,transparent)}
+@media (min-width:1272px){.fundo{
+  -webkit-mask-image:linear-gradient(#000 68%,transparent),linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(#000 68%,transparent),linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent);mask-composite:intersect}}
+@media (max-width:760px){.fundo{height:1400px;background-size:960px auto;background-position:center -40px}}
 .camada{position:relative;z-index:1}
 .wrap{max-width:760px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
 .wrap.largo{max-width:1040px}
